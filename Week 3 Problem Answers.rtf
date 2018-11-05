@@ -1,0 +1,194 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red38\green38\blue38;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c20000\c20000\c20000;\cssrgb\c100000\c100000\c100000;}
+\margl1440\margr1440\vieww33100\viewh19280\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 5.5.2\
+\
+1. mutate(flights,min_dep_time = ((dep_time %/% 100)*60) + dep_time %% 100, min_sched_dep_time = ((sched_dep_time %/% 100)*60) + sched_dep_time %% 100)\
+\
+2.Need to convert dep_time and arr_time to minutes using function above. Need to convert air time to minutes using a similar function as well. \
+\
+3. dep_delay should be dep_time - sched_dep_time\
+\
+4. \
+    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay carrier flight tailnum origin dest \
+   <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>     <dbl> <chr>    <int> <chr>   <chr>  <chr>\
+ 1  2013     1     9      641            900      1301     1242           1530      1272 HA          51 N384HA  JFK    HNL  \
+ 2  2013     6    15     1432           1935      1137     1607           2120      1127 MQ        3535 N504MQ  JFK    CMH  \
+ 3  2013     1    10     1121           1635      1126     1239           1810      1109 MQ        3695 N517MQ  EWR    ORD  \
+ 4  2013     9    20     1139           1845      1014     1457           2210      1007 AA         177 N338AA  JFK    SFO  \
+ 5  2013     7    22      845           1600      1005     1044           1815       989 MQ        3075 N665MQ  JFK    CVG  \
+ 6  2013     4    10     1100           1900       960     1342           2211       931 DL        2391 N959DL  JFK    TPA  \
+ 7  2013     3    17     2321            810       911      135           1020       915 DL        2119 N927DA  LGA    MSP  \
+ 8  2013     6    27      959           1900       899     1236           2226       850 DL        2007 N3762Y  JFK    PDX  \
+ 9  2013     7    22     2257            759       898      121           1026       895 DL        2047 N6716C  LGA    ATL  \
+10  2013    12     5      756           1700       896     1058           2020       878 AA         172 N5DMAA  EWR    MIA  \
+\
+5. Cannot add 3 rows with 10 rows\
+\
+5.6.7\
+2.\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f1\fs32 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 not_cancelled %>% sum(!is.na(dest)) \
+not_cancelled %>% sum(!is.na(tailnum))\
+\
+3.\
+There are flights which departed but never arrived. arr_delay is the more important column\
+\
+4. \
+cancel <- flights %>%\
+    group_by(year, month, day) %>%\
+    summarise(\
+       avg_canc = mean(is.na(arr_delay)),\
+       avg_delay = mean(arr_delay,na.rm = TRUE)\
+    )\
+\
+Yes the more the average delays the more the proportion of cancelled flights\
+\
+5. F9 has the worst delays\
+\
+5.7.1\
+\
+1. Mutate within a group allows you to compute calculations and aggregates for a specific sub-group of the total population, filtering when combined with grouping allows you filter based on ranks and counts of sub-groups.\
+\
+2. N844MH\
+\
+3. \
+\
+arrange(tailn,desc(delays))\
+\
+tofday <- flights %>%\
+  group_by(hour) %>%\
+  summarise(\
+    delays = mean(arr_delay, na.rm = TRUE)\
+    \
+  )\
+2100 hours is the worst time to fly\
+7 in the morning is the best time to fly\
+\
+4. \
+\
+destdel <- flights %>%\
+  group_by(dest) %>%\
+  summarise(\
+    totdelays = sum(arr_delay[are_delay > 0], na.rm = TRUE)\
+    \
+  )\
+destdel\
+\
+Flightdstdel <- flights %>%\
+  filter(!is.na(arr_delay), arr_delay > 0) %>%\
+  group_by(dest) %>%\
+  mutate(arr_delay_tot = sum(arr_delay),\
+              arr_delay_prop = arr_delay / arr_delay_total)\
+\
+5. \
+\
+lag_del <- flights %>%\
+   arrange(origin, year, month, day, dep_time) %>%\
+   group_by(origin) %>%\
+   mutate(dep_delay_lag = lag(dep_delay)) %>%\
+\
+6. \
+\
+suspect <- flights %>%\
+   group_by(dest) %>%\
+   arrange(air_time) %>%\
+   slice(1:5) %>%\
+   select(tailnum, sched_dep_time, sched_arr_time, air_time) %>%\
+   arrange(air_time)\
+\
+outl <- flights %>%\
+    group_by(dest) %>%\
+    mutate(short = air_time - min(air_time, na.rm = TRUE)) %>%\
+    top_n(1,air_time) %>%\
+    arrange(-air_time) %>%\
+    select(tailnum, sched_dep_time, sched_arr_time, short)\
+\
+7. \
+\
+car <- flights %>%\
+   group_by(dest) %>%\
+   filter(n_distinct(carrier) > 2) %>%\
+   group_by(carrier) %>%\
+   summarise(n = n_distinct(dest)) %>%\
+   arrange(-n)\
+\
+8. \
+Ontime <- flights %>%\
+   group_by(origin, tailnum) %>%\
+   summarise(\
+     count.= n(),\
+     agg_dep_delay = sum(cumsum(dep_delay > 60) < 1)\
+   )\
+\
+\
+19.3.1\
+1. \
+f1 (return_prefix)\
+f2 (remove_last_item)\
+f3 (print_n_times)\
+\
+2. get_coverage_values(vertical, product, start_date, end_date)  \
+\
+3. rnorm uses univariate normal distribution and mvrnorm uses multivariate nornmal distribution. To be consistent. They should either by rnorm and rmvnorm or uvrnorm and mvrnorm. Also arguments should be standardized. \
+\
+4. If norm_r and norm_d were used you could tell the distribution in this case normal from the start of the function and wouldn\'92t be confused. By using rnorm and dnorm you are able to identify what the function is going to do and then know what distribution is being used. \
+\
+\
+19.4.1\
+\
+1. If only allocates a value if an expression is true. IF else can allocation multiple values base don the expression. \
+\
+2. \
+Greeting <- function(currentt = lubridate::now()\{\
+   currenth <- lubridate::hour(currentt)\
+   \
+   If (currenth < 12) \{\
+      \'93good morning\'94\
+   \} else if (currenth < 18 \{\
+      \'93good afternoon\'94\
+   \} else \{\
+      \'93Good night\'94\
+   \}\
+\}\
+\
+3. \
+fizzbuzz <- function(x) \{\
+    If (!(x %% 3) && !(x %% 5)) \{\
+          \'93fizzbuzz\'94\
+    \}\
+    else if (!(x %% 3)) \{\
+          \'93fizz\'94\
+    \}\
+    else if (!(x %% 5)) \{\
+          \'93buzz\'94\
+    \}\
+    else \{\
+           x\
+    \}\
+\}\
+\
+4. \
+\
+breaks <- c(-Inf, 0, 10, 20, 30, +Inf)\
+labels <- c(\'93freezing\'94,\'94cold\'94,\'94cool\'94,\'94warm\'94,\'94hot\'94)\
+cut(temp, breaks, labels)\
+\
+To remove <= and use < need to use right = FALSE\
+\
+5. \
+\
+Switch with numeric values with return that element from a list. \
+\
+6. \
+This switch will return the next non empty value. For a & b it will return ab and for c and d it will return cd. \
+For x equal to e onwards it will return null. \
+\
+\
+}
