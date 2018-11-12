@@ -1,0 +1,181 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 20.3.5\
+\
+1\
+\
+is.finite returns true for numeric values that are not missing , not null and not positive or negative infinity\
+!is.infinite return true for numeric values along with missing and null value\
+\
+2. \
+Checks to see if a value is close enough to another value instead of being exactly the same. Uses square root of machine double eps\
+\
+3.\
+Integer values can have approximately slightly under 2^32 values because it also has NA values. Double can have slightly under 2^64 values because it can also have NaN and -Inf and +Inf values. \
+\
+4.\
+As.integer()\
+floor()\
+ceil()\
+round()\
+\
+20.4.6\
+\
+1\
+mean(is.na(x)) gives the proportion of missing values in the vector\
+sum(!is.finite(x) gives the total infinite values in the vector\
+\
+2.\
+is.vector() checks wether the components contain only values other than name\
+is.atomic() checks that objects is one of logical, integer, numeric, complex, character and raw\
+\
+3.\
+set_names() allows you to do what setnames() does but set_names() checks the lengths of the arguments and also allows functions to be used in naming\
+\
+4.\
+(i)\
+lastvalue <- function(x) \{\
+     x[[length(x)]]\
+\}\
+\
+(ii)\
+evenindices <- function(x) \{\
+    x[seq_along(x) %% 2 == 0]\
+\}\
+\
+(iii)\
+excluding last <- function(x) \{\
+    n <- length(x)\
+    x[-n]\
+\}\
+\
+(iv)\
+evennumber <- function(x) \{\
+    x[x %% 2 == 0]\
+\}\
+\
+5. \
+<= will convert NaNs to NA\
+\
+6. \
+Returns NA\
+\
+20.5.4\
+1 (i)\
+(\
+  a, \
+  b, \
+  (c,d)\
+  (e,f)\
+)\
+\
+(ii).\
+(\
+  (\
+     (\
+       (\
+         (\
+            (\
+               a\
+            )\
+          )\
+        )\
+      )\
+  )\
+)\
+\
+2.\
+They behave the same. \
+\
+21.2.1\
+1.\
+(I)\
+result <- vector(\'93double\'94, ncol(mtcars)\
+names(result) <- names(mtcars)\
+for (i in names(mtcars)) \{\
+   output[[1]] <- mean(mtcars[[I]])\
+\}\
+\
+(ii)\
+data(\'93flights\'94, package = \'93nycflights13\'94)\
+result <- vector(\'93list\'94, ncol(flights))\
+names(result) <- names(flights)\
+for (I in names(flights)) \{\
+   result[[I]] <- class(flights[[I]])\
+\}\
+\
+(iii)\
+data(\'93iris\'94)\
+iris_result <- vector(\'93double\'94, ncol(iris))\
+names(iris_result) <- name(iris)\
+for (I in names(iris)) \{\
+    iris_result[I] <- length(unique(iris[[I]])\
+\}\
+\
+(iv)\
+nrandom <- 10\
+mn <- c(-10,0,10,100)\
+norml <- vector(\'93list\'94, length(mn))\
+For (I in seq_along(norml)) \{\
+    norml[[I]] <- rnorm(n, mean = mn[i])\
+\}\
+\
+2.\
+\
+(I)\
+str_c(letters, collapse = \'93\'94)\
+\
+(ii)\
+sqrt(sum((x - mean(x)) ^ 2) / (length(x) - 1))\
+\
+(iii)\
+all.equal(cumsum(x),out)\
+\
+21.3.5\
+\
+my_frame <- vector(\'93list\'94, length(files))\
+for (fname in seq_along(files)) \{\
+   my_frame[[I]] <- read_csv(files[[I]])\
+\}\
+my_frame <- bind_rows(my_frame)\
+\
+2.\
+\
+If there are no names in x then nothing returns, if some of the elements are named an error occurs when trying to access an elements without names. If there names which are not unique the first element with the name is used. \
+\
+3. \
+means <- function(df) \{\
+   maxlen <- max(string::str_length(names(df))\
+   For (curname in names(df)) \{\
+      If (is.numeric(df[[curname]])) \{\
+         cat(string::str_c(string::str_pad(stringr::str_c(currname, \'93:\'94),\
+                mean(df[[nm]]), sep = \'93 \'93), \'93\\n\'94)\
+        \}\
+    \}\
+\}\
+\
+21.5.3\
+\
+1.\
+\
+map_dbl(mtcars, mean)\
+\
+2.\
+\
+map_chr(nycflights13::flights, typeof)\
+\
+3.\
+\
+map_int(iris, function(x) length(unique(x)))\
+\
+4.\
+\
+map(c(-10,0,10,100), rnorm, n=10)\
+\
+\
+}
